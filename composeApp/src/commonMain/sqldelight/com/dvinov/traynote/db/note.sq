@@ -1,11 +1,11 @@
-CREATE TABLE note (
+CREATE TABLE IF NOT EXISTS note (
        id INTEGER PRIMARY KEY NOT NULL,
        title TEXT NOT NULL,
        content TEXT NOT NULL,
        updatedAt INTEGER AS kotlinx.datetime.LocalDateTime NOT NULL
 );
 
-CREATE INDEX content ON note(content);
+CREATE INDEX IF NOT EXISTS content ON note(content);
 
 selectAll:
 SELECT *

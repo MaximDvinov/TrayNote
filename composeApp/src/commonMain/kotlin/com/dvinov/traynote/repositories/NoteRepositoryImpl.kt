@@ -11,7 +11,7 @@ class NoteRepositoryImpl(private val dao: NoteDao) : NoteRepository {
         dao.insertNote(note)
     }
 
-    override suspend fun deleteNote(note: Note) {
+    override suspend fun deleteNote(note: Long) {
         dao.deleteNote(note)
     }
 

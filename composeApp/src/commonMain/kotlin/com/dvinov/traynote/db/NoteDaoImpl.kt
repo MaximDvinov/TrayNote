@@ -15,8 +15,8 @@ class NoteDaoImpl(private val database: Database) : NoteDao {
         database.noteQueries.insert(note)
     }
 
-    override suspend fun deleteNote(note: Note) {
-        database.noteQueries.deleteById(note.id)
+    override suspend fun deleteNote(note: Long) {
+        database.noteQueries.deleteById(note)
     }
 
     override suspend fun updateNote(note: Note) {
