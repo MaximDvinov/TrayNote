@@ -1,0 +1,23 @@
+CREATE TABLE note (
+       id INTEGER PRIMARY KEY NOT NULL,
+       title TEXT NOT NULL,
+       content TEXT NOT NULL,
+       updatedAt INTEGER AS kotlinx.datetime.LocalDateTime NOT NULL
+);
+
+CREATE INDEX content ON note(content);
+
+selectAll:
+SELECT *
+FROM note;
+
+insert:
+INSERT INTO note(title, content, updatedAt)
+VALUES ?;
+
+deleteById:
+DELETE FROM note WHERE id = ?;
+
+updateNoteById:
+UPDATE note
+SET title = :title, content =:content, updatedAt = :updatedAt WHERE id = :id;
