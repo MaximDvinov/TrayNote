@@ -7,10 +7,15 @@ plugins {
     alias(libs.plugins.buildConfig)
     alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.sqlDelight)
+    alias(libs.plugins.conveyor)
+
 }
 
 kotlin {
-    jvm()
+    jvm(){
+        version = "1.0"
+        group = "com.dvinov.traynote"
+    }
 
     sourceSets {
         commonMain.dependencies {
@@ -50,9 +55,14 @@ compose.desktop {
         mainClass = "MainKt"
 
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.dvinov.traynote.desktopApp"
-            packageVersion = "1.0.0"
+            targetFormats(TargetFormat.Dmg, TargetFormat.Exe, TargetFormat.Deb)
+            includeAllModules = true
+            packageName = "TrayNote"
+            version = "1.0.0"
+            windows {
+                packageVersion = "TrayNote"
+                exePackageVersion = "1.0.0"
+            }
         }
     }
 }
@@ -77,3 +87,4 @@ sqldelight {
         }
     }
 }
+

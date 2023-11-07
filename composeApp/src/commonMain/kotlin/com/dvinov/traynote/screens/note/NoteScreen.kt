@@ -1,5 +1,6 @@
 package com.dvinov.traynote.screens.note
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +12,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.IconButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.PushPin
+import androidx.compose.material.icons.rounded.Favorite
+import androidx.compose.material.icons.rounded.FavoriteBorder
+import androidx.compose.material.icons.rounded.Pin
+import androidx.compose.material.icons.rounded.PushPin
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.FloatingActionButton
@@ -34,7 +42,6 @@ import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.dvinov.traynote.ObserveAsEvents
-import com.dvinov.traynote.db.Note
 import com.dvinov.traynote.navigation.NavigationEvent
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.ArrowLeft
@@ -42,6 +49,7 @@ import compose.icons.feathericons.Delete
 import compose.icons.feathericons.Plus
 import compose.icons.feathericons.Save
 import compose.icons.feathericons.Trash
+import com.dvinov.traynote.db.Note
 
 class NoteScreen(val note: Note?) : Screen {
     @Composable
@@ -91,6 +99,23 @@ fun NoteScreenContent(state: NoteState, onEvent: (NoteScreenEvent) -> Unit) {
                 Icon(
                     imageVector = FeatherIcons.Trash, ""
                 )
+            }
+
+            IconButton(onClick = {
+                onEvent(NoteScreenEvent.OnPinnedChange)
+            }) {
+                AnimatedContent(!state.isPinned) {
+                    if (it) {
+                        Icon(
+                            imageVector = Icons.Rounded.FavoriteBorder, ""
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Filled.Favorite, ""
+                        )
+                    }
+                }
+
             }
         })
     }, floatingActionButton = {

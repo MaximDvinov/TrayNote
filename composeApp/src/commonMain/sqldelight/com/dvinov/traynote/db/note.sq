@@ -1,15 +1,17 @@
+import kotlin.Boolean;
+
 CREATE TABLE IF NOT EXISTS note (
        id INTEGER PRIMARY KEY NOT NULL,
        title TEXT NOT NULL,
        content TEXT NOT NULL,
-       updatedAt INTEGER AS kotlinx.datetime.LocalDateTime NOT NULL
+       updatedAt INTEGER AS kotlinx.datetime.LocalDateTime NOT NULL,
+       isPinned INTEGER AS Boolean DEFAULT 0
 );
 
-CREATE INDEX IF NOT EXISTS content ON note(content);
 
 selectAll:
 SELECT *
-FROM note;
+FROM note ORDER BY updatedAt DESC;
 
 insert:
 INSERT INTO note(title, content, updatedAt)
@@ -20,4 +22,4 @@ DELETE FROM note WHERE id = ?;
 
 updateNoteById:
 UPDATE note
-SET title = :title, content =:content, updatedAt = :updatedAt WHERE id = :id;
+SET title = :title, content =:content, updatedAt = :updatedAt, isPinned = :isPinned WHERE id = :id;

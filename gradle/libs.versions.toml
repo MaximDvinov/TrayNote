@@ -17,6 +17,7 @@ kotlinx-datetime = "0.4.1"
 multiplatformSettings = "1.1.0"
 koin = "3.5.0"
 sqlDelight = "2.0.0"
+conveyor = "1.6"
 
 [libraries]
 
@@ -50,3 +51,4 @@ libres = { id = "io.github.skeptick.libres", version.ref = "libres" }
 buildConfig = { id = "com.github.gmazzo.buildconfig", version.ref = "buildConfig" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 sqlDelight = { id = "app.cash.sqldelight", version.ref = "sqlDelight" }
+conveyor = { id = "dev.hydraulic.conveyor", version.ref = "conveyor" }

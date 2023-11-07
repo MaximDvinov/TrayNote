@@ -4,28 +4,24 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.Navigator
-import cafe.adriel.voyager.navigator.currentOrThrow
+import com.dvinov.traynote.db.Note
 import com.dvinov.traynote.screens.home.HomeScreen
 import com.dvinov.traynote.screens.note.NoteScreen
 import com.dvinov.traynote.theme.AppTheme
 
 @Composable
-internal fun App(isCreate: Boolean) = AppTheme {
-    AppContent(isCreate)
+internal fun App(isCreate: Boolean, openNote: Note?) = AppTheme {
+    AppContent(isCreate, openNote)
 }
 
 @Composable
-fun AppContent(isCreate: Boolean) {
+fun AppContent(isCreate: Boolean, openNote: Note?) {
     Column(modifier = Modifier.fillMaxSize()) {
-        if (isCreate) {
-            Navigator(listOf(HomeScreen(), NoteScreen(null)))
+        if (isCreate || openNote != null) {
+            Navigator(listOf(HomeScreen(), NoteScreen(openNote)))
         } else {
             Navigator(HomeScreen())
         }
-
-
     }
 }

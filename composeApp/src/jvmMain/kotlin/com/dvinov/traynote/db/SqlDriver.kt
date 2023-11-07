@@ -8,7 +8,11 @@ import java.io.File
 
 
 actual fun createDriver(): SqlDriver {
-    val path = File(System.getProperty("java.io.tmpdir"), "note.db")
+    val path = File(AppDirs("TrayNote").getUserDataDir(), "TrayNote.db")
+    if (!path.exists()) {
+        File(path.parent).mkdirs()
+        path.createNewFile()
+    }
     val driver: SqlDriver =
         JdbcSqliteDriver(url = "jdbc:sqlite:${path}").also {
             Database.Schema.create(it)

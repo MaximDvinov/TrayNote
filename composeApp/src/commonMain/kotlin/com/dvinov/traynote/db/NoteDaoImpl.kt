@@ -3,6 +3,7 @@ package com.dvinov.traynote.db
 import app.cash.sqldelight.coroutines.asFlow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import com.dvinov.traynote.db.Note
 
 class NoteDaoImpl(private val database: Database) : NoteDao {
     override fun getAllNotes(): Flow<List<Note>> {
@@ -24,7 +25,8 @@ class NoteDaoImpl(private val database: Database) : NoteDao {
             id = note.id,
             title = note.title,
             content = note.content,
-            updatedAt = note.updatedAt
+            updatedAt = note.updatedAt,
+            isPinned = note.isPinned
         )
     }
 }
