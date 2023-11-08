@@ -36,23 +36,30 @@ fun main() = application {
         App(isCreate, openNote)
     }
 
-    Tray(
-        icon = rememberVectorPainter(FeatherIcons.FilePlus),
-        tooltip = "TrayNote",
-        onAction = { isVisible = true },
-        menu = {
-            notes.forEach {
-                Item(it.title, onClick = {
-                    openNote = it
+    if (!isVisible){
+        Tray(
+            icon = rememberVectorPainter(FeatherIcons.FilePlus),
+            tooltip = "TrayNote",
+            onAction = { isVisible = true },
+            menu = {
+                notes.forEach {
+                    Item(it.title, onClick = {
+                        openNote = it
+                        isVisible = true
+                    })
+                }
+
+                Item("Создать", onClick = {
+                    isCreate = true
                     isVisible = true
                 })
-            }
 
-            Item("Создать", onClick = {
-                isCreate = true
-                isVisible = true
-            })
-        }
-    )
+                Item("Закрыть", onClick = {
+                    exitApplication()
+                })
+            }
+        )
+    }
+
 
 }

@@ -11,11 +11,10 @@ plugins {
 
 }
 
+version = "1.0"
+
 kotlin {
-    jvm(){
-        version = "1.0"
-        group = "com.dvinov.traynote"
-    }
+    jvm()
 
     sourceSets {
         commonMain.dependencies {

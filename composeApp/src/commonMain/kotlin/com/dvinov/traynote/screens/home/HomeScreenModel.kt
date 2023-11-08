@@ -42,7 +42,12 @@ class HomeScreenModel(private val noteRepository: NoteRepository) : ScreenModel 
                 _state.update { oldState ->
                     oldState.copy(
                         list = list,
-                        searchedList = list.filter { it.content == oldState.query })
+                        searchedList = list.filter {
+                            it.content.contains(
+                                oldState.query ?: "",
+                                ignoreCase = true
+                            ) || it.title.contains(oldState.query ?: "", ignoreCase = true)
+                        })
                 }
             }
         }
@@ -67,10 +72,11 @@ class HomeScreenModel(private val noteRepository: NoteRepository) : ScreenModel 
                     _state.update { oldState ->
                         oldState.copy(
                             query = event.query,
-                            searchedList = if (event.query.isNullOrBlank()) listOf() else oldState.list.filter {
+                            searchedList = oldState.list.filter {
                                 it.content.contains(
-                                    event.query ?: ""
-                                )
+                                    event.query ?: "",
+                                    ignoreCase = true
+                                ) || it.title.contains(event.query ?: "", ignoreCase = true)
                             })
                     }
                 }

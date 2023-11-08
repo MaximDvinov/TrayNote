@@ -1,33 +1,55 @@
 package com.dvinov.traynote.screens.home
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.IconButton
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DockedSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
+import androidx.compose.material3.SearchBarColors
+import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.getScreenModel
@@ -69,41 +91,10 @@ class HomeScreen : Screen {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreenContent(state: HomeState, onEvent: (HomeEvent) -> Unit) {
     Scaffold(modifier = Modifier, topBar = {
-        SearchBar(
-            modifier = Modifier.padding(16.dp).clip(MaterialTheme.shapes.extraLarge),
-            query = state.query ?: "",
-            windowInsets = WindowInsets(16.dp),
-            onQueryChange = { onEvent(HomeEvent.OnSearchChange(it)) },
-            active = state.query != null,
-            onSearch = {},
-            onActiveChange = { onEvent(HomeEvent.OnSearchChange("")) },
-            leadingIcon = {
-                IconButton(onClick = {}) {
-                    Icon(FeatherIcons.Search, "")
-                }
-            },
-            trailingIcon = {
-                IconButton(onClick = { onEvent(HomeEvent.OnSearchChange(null)) }) {
-                    Icon(FeatherIcons.X, "")
-                }
-            }
-        ) {
-            LazyVerticalGrid(
-                modifier = Modifier.fillMaxSize(),
-                columns = GridCells.Adaptive(minSize = 250.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(16.dp),
-            ) {
-                items(state.searchedList ?: listOf()) { note ->
-                    NoteItem(note = note) { onEvent(HomeEvent.OnNoteClick(note)) }
-                }
-            }
-        }
+        NoteSearchBar(state, onEvent)
     }, floatingActionButton = {
         FloatingActionButton(
             onClick = {
@@ -114,81 +105,82 @@ fun HomeScreenContent(state: HomeState, onEvent: (HomeEvent) -> Unit) {
             Icon(FeatherIcons.Plus, "")
         }
     }) { padding ->
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = 250.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(
+        NotesList(
+            Modifier.fillMaxSize(), PaddingValues(
                 top = padding.calculateTopPadding(),
+                bottom = padding.calculateTopPadding(),
                 start = 16.dp,
-                end = 16.dp,
-                bottom = padding.calculateBottomPadding()
-            ),
-        ) {
-            items(state.list) { note ->
-                NoteItem(note = note) { onEvent(HomeEvent.OnNoteClick(note)) }
+                end = 16.dp
+            ), state.searchedList ?: listOf(), onEvent = onEvent
+        )
+    }
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun NoteSearchBar(
+    state: HomeState,
+    onEvent: (HomeEvent) -> Unit,
+) {
+    val focusRequester = remember { FocusRequester() }
+
+    Row(
+        modifier = Modifier
+            .padding(16.dp)
+            .clip(MaterialTheme.shapes.large)
+            .background(MaterialTheme.colorScheme.secondaryContainer)
+            .padding()
+            .height(intrinsicSize = IntrinsicSize.Min),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        AnimatedVisibility(visible = state.query != null) {
+            TextField(
+                modifier = Modifier.focusRequester(focusRequester)
+                    .padding(horizontal = 16.dp),
+                text = state.query ?: "",
+                onTextChange = {
+                    onEvent(HomeEvent.OnSearchChange(it))
+                },
+                placeholder = "Поиск",
+                style = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.onSecondaryContainer),
+            )
+            LaunchedEffect(state.query != null){
+                focusRequester.requestFocus()
+            }
+        }
+
+        AnimatedContent(state.query == null) {
+            if (it) {
+                IconButton(onClick = { onEvent(HomeEvent.OnSearchChange("")) }) {
+                    Icon(FeatherIcons.Search, "", tint = MaterialTheme.colorScheme.onSecondaryContainer)
+                }
+            } else {
+                IconButton(onClick = { onEvent(HomeEvent.OnSearchChange(null)) }) {
+                    Icon(FeatherIcons.X, "", tint = MaterialTheme.colorScheme.onSecondaryContainer)
+                }
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun NoteTopBar(
-    state: HomeState,
+private fun NotesList(
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+    list: List<Note>,
     onEvent: (HomeEvent) -> Unit,
 ) {
-    TopAppBar(title = {
-        AnimatedContent(state.query == null) {
-            if (it) {
-                Text(
-                    "Заметки",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            } else {
-
-                TextField(
-                    modifier = Modifier.padding(start = 16.dp),
-                    text = state.query ?: "",
-                    onTextChange = {
-                        onEvent(HomeEvent.OnSearchChange(it))
-                    },
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        color = MaterialTheme.colorScheme.onBackground
-                    ),
-                    placeholder = "Поиск",
-                )
-
-            }
+    LazyVerticalGrid(
+        modifier = modifier,
+        columns = GridCells.FixedSize(350.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = contentPadding,
+    ) {
+        items(list) { note ->
+            NoteItem(note = note) { onEvent(HomeEvent.OnNoteClick(note)) }
         }
-    }, actions = {
-        Spacer(Modifier.weight(1f))
-        IconButton(onClick = {
-            if (state.query != null) {
-                onEvent(HomeEvent.OnSearchChange(null))
-            } else {
-                onEvent(HomeEvent.OnSearchChange(""))
-            }
-
-        }) {
-            AnimatedContent(state.query == null) {
-                if (it) {
-                    Icon(
-                        imageVector = FeatherIcons.Search, ""
-                    )
-                } else {
-                    Column {
-                        Icon(
-                            imageVector = FeatherIcons.X, ""
-                        )
-                    }
-
-                }
-            }
-
-        }
-    })
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
