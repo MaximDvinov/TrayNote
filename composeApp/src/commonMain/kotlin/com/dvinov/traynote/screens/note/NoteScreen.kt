@@ -1,7 +1,9 @@
 package com.dvinov.traynote.screens.note
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -9,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.IconButton
@@ -33,6 +36,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -50,6 +54,14 @@ import compose.icons.feathericons.Plus
 import compose.icons.feathericons.Save
 import compose.icons.feathericons.Trash
 import com.dvinov.traynote.db.Note
+import com.dvinov.traynote.screens.note.components.RichTextStyleRow
+import com.mohamedrejeb.richeditor.model.rememberRichTextState
+import com.mohamedrejeb.richeditor.ui.BasicRichTextEditor
+import com.mohamedrejeb.richeditor.ui.material3.RichTextEditor
+import com.mohamedrejeb.richeditor.ui.material3.RichTextEditorColors
+import com.mohamedrejeb.richeditor.ui.material3.RichTextEditorDefaults
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class NoteScreen(val note: Note?) : Screen {
     @Composable
@@ -66,9 +78,7 @@ class NoteScreen(val note: Note?) : Screen {
         }
 
         LaunchedEffect(note?.id) {
-            if (note != null) {
-                screenModel.noteInit(note)
-            }
+            screenModel.noteInit(note)
         }
 
 
@@ -128,23 +138,31 @@ fun NoteScreenContent(state: NoteState, onEvent: (NoteScreenEvent) -> Unit) {
         }
     }) { padding ->
         Column(modifier = Modifier.padding(padding)) {
-            TextField(
-                modifier = Modifier.padding(start = 16.dp, top = 0.dp, end = 16.dp).fillMaxWidth(),
-                text = state.title,
-                onTextChange = { onEvent(NoteScreenEvent.OnNoteTitleChange(it)) },
-                placeholder = "Заголовок...",
-                style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.onBackground)
-            )
+//            TextField(
+//                modifier = Modifier.padding(start = 16.dp, top = 0.dp, end = 16.dp).fillMaxWidth(),
+//                text = state.title,
+//                onTextChange = { onEvent(NoteScreenEvent.OnNoteTitleChange(it)) },
+//                placeholder = "Заголовок...",
+//                style = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.onBackground)
+//            )
+//
+//            Box(
+//                Modifier
+//                    .background(MaterialTheme.colorScheme.onBackground.copy(0.4f))
+//                    .fillMaxWidth().height(1.3.dp)
+//                    .padding(10.dp)
+//            )
 
-            Spacer(Modifier.height(4.dp))
+            if (state.content != null) {
+                RichTextField(
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp).fillMaxSize(),
+                    text = state.content,
+                    onTextChange = { onEvent(NoteScreenEvent.OnNoteContentChange(it)) },
+                    placeholder = "Текст заметки...",
+                    style = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onBackground)
+                )
+            }
 
-            TextField(
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp).fillMaxSize(),
-                text = state.content,
-                onTextChange = { onEvent(NoteScreenEvent.OnNoteContentChange(it)) },
-                placeholder = "Текст заметки...",
-                style = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onBackground)
-            )
         }
     }
 
@@ -180,4 +198,61 @@ fun TextField(
         maxLines = maxLines,
         keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
     )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RichTextField(
+    modifier: Modifier = Modifier,
+    text: String,
+    onTextChange: (String) -> Unit,
+    style: TextStyle = MaterialTheme.typography.bodyMedium,
+    placeholder: String = "",
+    maxLines: Int = Int.MAX_VALUE,
+) {
+    val state = rememberRichTextState()
+
+    LaunchedEffect(text) {
+        if (state.annotatedString.isBlank()) state.setHtml(text)
+    }
+
+    LaunchedEffect(state.annotatedString) {
+        onTextChange(state.toHtml())
+
+    }
+
+    Column(modifier = modifier) {
+        BasicRichTextEditor(
+            modifier = Modifier.fillMaxWidth().weight(1f),
+            state = state,
+            textStyle = style,
+            cursorBrush = SolidColor(MaterialTheme.colorScheme.onBackground),
+            decorationBox = { innerTextField ->
+                Box {
+                    if (text.isEmpty()) {
+                        Text(
+                            text = placeholder,
+                            style = style.copy(
+                                color = MaterialTheme.colorScheme.onBackground.copy(
+                                    0.6f
+                                )
+                            )
+                        )
+                    }
+                    innerTextField()
+                }
+            },
+        )
+        RichTextStyleRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .background(MaterialTheme.colorScheme.secondaryContainer)
+                .padding(4.dp),
+            state = state
+        )
+    }
+
+
 }

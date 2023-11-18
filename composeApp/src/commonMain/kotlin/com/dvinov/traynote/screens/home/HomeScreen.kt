@@ -6,6 +6,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -62,6 +63,8 @@ import com.dvinov.traynote.navigation.NavigationEvent
 import com.dvinov.traynote.screens.note.NoteScreen
 import com.dvinov.traynote.screens.note.NoteScreenEvent
 import com.dvinov.traynote.screens.note.TextField
+import com.mohamedrejeb.richeditor.model.rememberRichTextState
+import com.mohamedrejeb.richeditor.ui.material.RichText
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.ArrowLeft
 import compose.icons.feathericons.Plus
@@ -144,7 +147,7 @@ private fun NoteSearchBar(
                 placeholder = "Поиск",
                 style = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.onSecondaryContainer),
             )
-            LaunchedEffect(state.query != null){
+            LaunchedEffect(state.query != null) {
                 focusRequester.requestFocus()
             }
         }
@@ -152,7 +155,11 @@ private fun NoteSearchBar(
         AnimatedContent(state.query == null) {
             if (it) {
                 IconButton(onClick = { onEvent(HomeEvent.OnSearchChange("")) }) {
-                    Icon(FeatherIcons.Search, "", tint = MaterialTheme.colorScheme.onSecondaryContainer)
+                    Icon(
+                        FeatherIcons.Search,
+                        "",
+                        tint = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
                 }
             } else {
                 IconButton(onClick = { onEvent(HomeEvent.OnSearchChange(null)) }) {
@@ -186,12 +193,17 @@ private fun NotesList(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteItem(note: Note, onClick: () -> Unit = {}) {
+    val state = rememberRichTextState()
+    state.setHtml(note.content)
     Card(onClick = onClick) {
         Column(
             modifier = Modifier.padding(8.dp), verticalArrangement = Arrangement.spacedBy(5.dp)
         ) {
-            Text(text = note.title, style = MaterialTheme.typography.titleMedium)
-            Text(text = note.content, style = MaterialTheme.typography.bodyMedium)
+//            Text(text = note.title, style = MaterialTheme.typography.titleMedium)
+            Text(
+                text = state.annotatedString,
+                style = MaterialTheme.typography.bodyLarge,
+            )
             Text(
                 text = note.updatedAt.dateTimeFormat(), style = MaterialTheme.typography.labelMedium
             )

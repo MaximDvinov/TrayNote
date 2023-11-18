@@ -19,7 +19,7 @@ import kotlinx.datetime.toLocalDateTime
 data class NoteState(
     val id: Long? = null,
     val title: String = "",
-    val content: String = "",
+    val content: String? = null,
     val isPinned: Boolean = false,
 )
 
@@ -38,14 +38,24 @@ class NoteScreenModel(private val noteRepository: NoteRepository) : ScreenModel 
     private val navigationEvent = Channel<NavigationEvent>()
     val navigationEventFlow = navigationEvent.receiveAsFlow()
 
-    fun noteInit(note: Note) {
+    fun noteInit(note: Note?) {
         _noteState.update {
-            it.copy(
-                id = note.id,
-                title = note.title,
-                content = note.content,
-                isPinned = note.isPinned ?: false
-            )
+            if (note == null) {
+                it.copy(
+                    id = null,
+                    title = "",
+                    content = "",
+                    isPinned = false
+                )
+            } else {
+                it.copy(
+                    id = note.id,
+                    title = note.title,
+                    content = note.content,
+                    isPinned = note.isPinned ?: false
+                )
+            }
+
         }
     }
 
@@ -90,14 +100,14 @@ class NoteScreenModel(private val noteRepository: NoteRepository) : ScreenModel 
     }
 
     private suspend fun saveNote() {
-        if (_noteState.value.content.isBlank()) return
+        if (_noteState.value.content.isNullOrBlank()) return
         val clock = Clock.System.now()
         if (_noteState.value.id != null) {
             noteRepository.updateNote(
                 Note(
                     id = _noteState.value.id!!,
                     title = _noteState.value.title,
-                    content = _noteState.value.content,
+                    content = _noteState.value.content!!,
                     updatedAt = clock.toLocalDateTime(TimeZone.UTC),
                     isPinned = _noteState.value.isPinned
                 )
@@ -107,7 +117,7 @@ class NoteScreenModel(private val noteRepository: NoteRepository) : ScreenModel 
                 Note(
                     id = 0,
                     title = _noteState.value.title,
-                    content = _noteState.value.content,
+                    content = _noteState.value.content!!,
                     updatedAt = clock.toLocalDateTime(TimeZone.UTC),
                     isPinned = _noteState.value.isPinned
                 )

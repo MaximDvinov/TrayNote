@@ -33,6 +33,7 @@ kotlin {
             implementation(libs.multiplatformSettings)
             implementation(libs.koin.core)
             implementation("ca.gosyer:kotlin-multiplatform-appdirs:1.1.1")
+            implementation("com.mohamedrejeb.richeditor:richeditor-compose:1.0.0-beta03")
             implementation(libs.sqlDelight.coroutines)
         }
 
