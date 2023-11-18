@@ -50,6 +50,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
@@ -199,10 +200,12 @@ fun NoteItem(note: Note, onClick: () -> Unit = {}) {
         Column(
             modifier = Modifier.padding(8.dp), verticalArrangement = Arrangement.spacedBy(5.dp)
         ) {
-//            Text(text = note.title, style = MaterialTheme.typography.titleMedium)
+            Text(text = note.title, style = MaterialTheme.typography.titleMedium)
             Text(
                 text = state.annotatedString,
                 style = MaterialTheme.typography.bodyLarge,
+                maxLines = 6,
+                overflow = TextOverflow.Ellipsis
             )
             Text(
                 text = note.updatedAt.dateTimeFormat(), style = MaterialTheme.typography.labelMedium

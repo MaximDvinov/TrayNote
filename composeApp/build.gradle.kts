@@ -1,4 +1,5 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import java.util.UUID
 
 plugins {
     alias(libs.plugins.multiplatform)
@@ -33,7 +34,7 @@ kotlin {
             implementation(libs.multiplatformSettings)
             implementation(libs.koin.core)
             implementation("ca.gosyer:kotlin-multiplatform-appdirs:1.1.1")
-            implementation("com.mohamedrejeb.richeditor:richeditor-compose:1.0.0-beta03")
+            implementation("com.mohamedrejeb.richeditor:richeditor-compose:1.0.0-beta04")
             implementation(libs.sqlDelight.coroutines)
         }
 
@@ -58,10 +59,13 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Exe, TargetFormat.Deb)
             includeAllModules = true
             packageName = "TrayNote"
-            version = "1.0.0"
+            version = "1.0.1"
+
             windows {
                 packageVersion = "TrayNote"
-                exePackageVersion = "1.0.0"
+                exePackageVersion = "1.0.1"
+                upgradeUuid = "1502c32b-a260-4100-9ee8-9dc2c50ef7b8"
+                iconFile.set(project.file("/resources/icon.ico"))
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.dvinov.traynote.screens.note.components
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -46,6 +47,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.PopupProperties
 import com.mohamedrejeb.richeditor.model.RichTextState
 
 val fontSizes = listOf(10.sp, 12.sp, 14.sp, 16.sp, 18.sp, 20.sp, 24.sp)
@@ -57,19 +59,27 @@ fun RichTextStyleButton(
     tint: Color? = null,
     isSelected: Boolean = false,
 ) {
+    val contentColor by animateColorAsState(
+        if (isSelected) {
+            MaterialTheme.colorScheme.onSecondary
+        } else {
+            MaterialTheme.colorScheme.onBackground
+        }
+    )
+
+    val iconBackgroundColor by animateColorAsState(
+        if (isSelected) {
+            MaterialTheme.colorScheme.secondary
+        } else {
+            Color.Transparent
+        }
+    )
+
     IconButton(
-        modifier = Modifier
-            // Workaround to prevent the rich editor
-            // from losing focus when clicking on the button
-            // (Happens only on Desktop)
-            .focusProperties { canFocus = false },
+        modifier = Modifier.focusProperties { canFocus = false },
         onClick = onClick,
         colors = IconButtonDefaults.iconButtonColors(
-            contentColor = if (isSelected) {
-                MaterialTheme.colorScheme.onSecondary
-            } else {
-                MaterialTheme.colorScheme.onBackground
-            },
+            contentColor = contentColor,
         ),
     ) {
         Icon(
@@ -77,11 +87,7 @@ fun RichTextStyleButton(
             contentDescription = icon.name,
             tint = tint ?: LocalContentColor.current,
             modifier = Modifier.background(
-                color = if (isSelected) {
-                    MaterialTheme.colorScheme.secondary
-                } else {
-                    Color.Transparent
-                }, shape = CircleShape
+                color = iconBackgroundColor, shape = CircleShape
             ).padding(4.dp)
         )
     }
@@ -165,7 +171,6 @@ fun RichTextStyleRow(
         item {
             Box {
                 var expanded by remember { mutableStateOf(false) }
-                val color = MaterialTheme.colorScheme.primary
                 RichTextStyleButton(
                     onClick = {
                         expanded = !expanded
@@ -174,8 +179,11 @@ fun RichTextStyleRow(
                     icon = Icons.Filled.ColorLens,
                     tint = state.currentSpanStyle.color
                 )
-                DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-
+                DropdownMenu(
+                    modifier = Modifier.clip(RoundedCornerShape(16.dp)),
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
                     colors.forEach {
                         RichTextStyleButton(
                             onClick = {
@@ -233,14 +241,10 @@ fun RichTextStyleRow(
             Box {
                 var expanded by remember { mutableStateOf(false) }
                 val value = state.currentSpanStyle.fontSize.value.toInt()
-                Text(modifier = Modifier
-                    .width(66.dp)
-                    .focusProperties { canFocus = false }
-                    .clip(RoundedCornerShape(8.dp))
-                    .clickable {
+                Text(modifier = Modifier.width(66.dp).focusProperties { canFocus = false }
+                    .clip(RoundedCornerShape(8.dp)).clickable {
                         expanded = !expanded
-                    }
-                    .padding(10.dp),
+                    }.padding(10.dp),
                     text = if (value == 0) "16sp" else (value.toString() + "sp"),
                     style = MaterialTheme.typography.bodyLarge.copy(
                         color = MaterialTheme.colorScheme.onBackground,

@@ -26,18 +26,18 @@ fun main() = application {
     val notes by noteRepository.getAllNotes().map { it.filter { it.isPinned == true } }
         .collectAsState(initial = emptyList())
 
-    val state = rememberWindowState()
-
     Window(
         onCloseRequest = {
             isVisible = false;
             isCreate = false
             openNote = null
         },
+        icon = rememberVectorPainter(FeatherIcons.FilePlus),
         visible = isVisible,
         title = "TrayNote",
     ) {
         window.minimumSize = Dimension(600, 400)
+        window.glassPane.setSize(100, 1000)
 
         App(isCreate, openNote)
     }

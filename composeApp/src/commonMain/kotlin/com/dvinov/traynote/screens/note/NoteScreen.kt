@@ -138,20 +138,20 @@ fun NoteScreenContent(state: NoteState, onEvent: (NoteScreenEvent) -> Unit) {
         }
     }) { padding ->
         Column(modifier = Modifier.padding(padding)) {
-//            TextField(
-//                modifier = Modifier.padding(start = 16.dp, top = 0.dp, end = 16.dp).fillMaxWidth(),
-//                text = state.title,
-//                onTextChange = { onEvent(NoteScreenEvent.OnNoteTitleChange(it)) },
-//                placeholder = "Заголовок...",
-//                style = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.onBackground)
-//            )
-//
-//            Box(
-//                Modifier
-//                    .background(MaterialTheme.colorScheme.onBackground.copy(0.4f))
-//                    .fillMaxWidth().height(1.3.dp)
-//                    .padding(10.dp)
-//            )
+            TextField(
+                modifier = Modifier.padding(start = 16.dp, top = 0.dp, end = 16.dp).fillMaxWidth(),
+                text = state.title,
+                onTextChange = { onEvent(NoteScreenEvent.OnNoteTitleChange(it)) },
+                placeholder = "Заголовок...",
+                style = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.onBackground)
+            )
+
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)
+                    .height(1.3.dp)
+            )
 
             if (state.content != null) {
                 RichTextField(
@@ -168,7 +168,6 @@ fun NoteScreenContent(state: NoteState, onEvent: (NoteScreenEvent) -> Unit) {
 
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TextField(
     modifier: Modifier = Modifier,
@@ -200,7 +199,6 @@ fun TextField(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RichTextField(
     modifier: Modifier = Modifier,

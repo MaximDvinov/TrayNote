@@ -5,3 +5,4 @@ This is a small notes application written in Kotlin Multiplatform and Compose Mu
 ## Features
 - Simple and intuitive note creation
 - System tray integration for quick access
+- Text stylization. (lib: [Compose Rich Editor](https://github.com/MohamedRejeb/Compose-Rich-Editor/tree/main))
