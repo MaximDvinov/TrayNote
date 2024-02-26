@@ -2,12 +2,12 @@
 
 kotlin = "1.9.20"
 agp = "8.1.2"
-compose = "1.5.10"
+compose = "1.5.12"
 androidx-appcompat = "1.6.1"
 androidx-activityCompose = "1.7.2"
 compose-uitooling = "1.5.1"
 libres = "1.2.1"
-voyager = "1.0.0-rc09"
+voyager = "1.0.0"
 composeImageLoader = "1.7.0"
 buildConfig = "4.1.1"
 kotlinx-coroutines = "1.7.3"
@@ -18,6 +18,8 @@ multiplatformSettings = "1.1.0"
 koin = "3.5.0"
 sqlDelight = "2.0.0"
 conveyor = "1.6"
+multiplatform-appdirs = "1.1.1"
+richeditor = "1.0.0-beta04"
 
 [libraries]
 
@@ -41,6 +43,8 @@ sqlDelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", 
 sqlDelight-driver-android = { module = "app.cash.sqldelight:android-driver", version.ref = "sqlDelight" }
 sqlDelight-driver-native = { module = "app.cash.sqldelight:native-driver", version.ref = "sqlDelight" }
 sqlDelight-driver-js = { module = "app.cash.sqldelight:web-worker-driver", version.ref = "sqlDelight" }
+kotlin-multiplatform-appdirs = {module = "ca.gosyer:kotlin-multiplatform-appdirs", version.ref = "multiplatform-appdirs"}
+richeditor-compose = {module = "com.mohamedrejeb.richeditor:richeditor-compose", version.ref = "richeditor"}
 
 [plugins]
 

@@ -1,67 +1,40 @@
 package com.dvinov.traynote.screens.note
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.IconButton
+import androidx.compose.material.Button
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.PushPin
-import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.FavoriteBorder
-import androidx.compose.material.icons.rounded.Pin
-import androidx.compose.material.icons.rounded.PushPin
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.dvinov.traynote.ObserveAsEvents
 import com.dvinov.traynote.navigation.NavigationEvent
-import compose.icons.FeatherIcons
-import compose.icons.feathericons.ArrowLeft
-import compose.icons.feathericons.Delete
-import compose.icons.feathericons.Plus
-import compose.icons.feathericons.Save
-import compose.icons.feathericons.Trash
 import com.dvinov.traynote.db.Note
 import com.dvinov.traynote.screens.note.components.RichTextStyleRow
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
 import com.mohamedrejeb.richeditor.ui.BasicRichTextEditor
-import com.mohamedrejeb.richeditor.ui.material3.RichTextEditor
-import com.mohamedrejeb.richeditor.ui.material3.RichTextEditorColors
-import com.mohamedrejeb.richeditor.ui.material3.RichTextEditorDefaults
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import compose.icons.FeatherIcons
+import compose.icons.feathericons.Trash
 
 class NoteScreen(val note: Note?) : Screen {
     @Composable
@@ -91,78 +64,73 @@ class NoteScreen(val note: Note?) : Screen {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteScreenContent(state: NoteState, onEvent: (NoteScreenEvent) -> Unit) {
-    val navigator = LocalNavigator.currentOrThrow
-    Scaffold(topBar = {
-        TopAppBar(navigationIcon = {
-            IconButton(onClick = {
-                navigator.pop()
-            }) {
-                Icon(
-                    imageVector = FeatherIcons.ArrowLeft, ""
-                )
-            }
-        }, title = {}, actions = {
-            Spacer(Modifier.weight(1f))
-            IconButton(onClick = {
-                onEvent(NoteScreenEvent.OnNoteDelete)
-            }) {
-                Icon(
-                    imageVector = FeatherIcons.Trash, ""
-                )
-            }
+    Scaffold { padding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 32.dp, start = 40.dp, end = 40.dp, bottom = 32.dp),
+            contentAlignment = Alignment.TopCenter
+        ) {
+            Column(
+                modifier = Modifier
+                    .widthIn(max = 900.dp)
+                    .heightIn(max = 700.dp)
+                    .fillMaxWidth()
+            ) {
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    TextField(
+                        modifier = Modifier.padding(bottom = 16.dp, start = 16.dp, end = 16.dp).weight(1f),
+                        text = state.title,
+                        onTextChange = { onEvent(NoteScreenEvent.OnNoteTitleChange(it)) },
+                        placeholder = "Заголовок...",
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            color = MaterialTheme.colorScheme.onBackground,
+                            fontSize = 18.sp
+                        )
+                    )
 
-            IconButton(onClick = {
-                onEvent(NoteScreenEvent.OnPinnedChange)
-            }) {
-                AnimatedContent(!state.isPinned) {
-                    if (it) {
+                    IconButton(onClick = {
+                        onEvent(NoteScreenEvent.OnNoteDelete)
+                    }) {
                         Icon(
-                            imageVector = Icons.Rounded.FavoriteBorder, ""
+                            imageVector = FeatherIcons.Trash, ""
                         )
-                    } else {
-                        Icon(
-                            imageVector = Icons.Filled.Favorite, ""
-                        )
+                    }
+
+                    IconButton(onClick = {
+                        onEvent(NoteScreenEvent.OnPinnedChange)
+                    }) {
+                        AnimatedContent(!state.isPinned) {
+                            if (it) {
+                                Icon(
+                                    imageVector = Icons.Rounded.FavoriteBorder, ""
+                                )
+                            } else {
+                                Icon(
+                                    imageVector = Icons.Filled.Favorite, ""
+                                )
+                            }
+                        }
+
                     }
                 }
 
+
+                if (state.content != null) {
+                    RichTextField(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(MaterialTheme.shapes.large)
+                            .background(MaterialTheme.colorScheme.secondaryContainer)
+                            .padding(16.dp),
+                        text = state.content,
+                        onEvent = onEvent,
+                        placeholder = "Текст заметки...",
+                        style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onBackground)
+                    )
+                }
+
             }
-        })
-    }, floatingActionButton = {
-        FloatingActionButton(
-            onClick = {
-                onEvent(NoteScreenEvent.OnNoteSave)
-            },
-        ) {
-            Icon(FeatherIcons.Save, "")
-        }
-    }) { padding ->
-        Column(modifier = Modifier.padding(padding)) {
-            TextField(
-                modifier = Modifier.padding(start = 16.dp, top = 0.dp, end = 16.dp).fillMaxWidth(),
-                text = state.title,
-                onTextChange = { onEvent(NoteScreenEvent.OnNoteTitleChange(it)) },
-                placeholder = "Заголовок...",
-                style = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.onBackground)
-            )
-
-            Box(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(10.dp)
-                    .height(1.3.dp)
-            )
-
-            if (state.content != null) {
-                RichTextField(
-                    modifier = Modifier.padding(start = 16.dp, end = 16.dp).fillMaxSize(),
-                    text = state.content,
-                    onTextChange = { onEvent(NoteScreenEvent.OnNoteContentChange(it)) },
-                    placeholder = "Текст заметки...",
-                    style = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onBackground)
-                )
-            }
-
         }
     }
 
@@ -185,7 +153,7 @@ fun TextField(
         cursorBrush = SolidColor(MaterialTheme.colorScheme.onBackground),
         decorationBox = { innerTextField ->
             Box {
-                if (text.isEmpty()) {
+                if (text.isBlank()) {
                     Text(
                         text = placeholder,
                         style = style.copy(color = MaterialTheme.colorScheme.onBackground.copy(0.6f))
@@ -203,20 +171,19 @@ fun TextField(
 fun RichTextField(
     modifier: Modifier = Modifier,
     text: String,
-    onTextChange: (String) -> Unit,
     style: TextStyle = MaterialTheme.typography.bodyMedium,
     placeholder: String = "",
+    onEvent: (NoteScreenEvent) -> Unit,
     maxLines: Int = Int.MAX_VALUE,
 ) {
     val state = rememberRichTextState()
 
     LaunchedEffect(text) {
-        if (state.annotatedString.isBlank()) state.setHtml(text)
+        if (state.annotatedString.isEmpty() && text.isNotEmpty()) state.setHtml(text)
     }
 
     LaunchedEffect(state.annotatedString) {
-        onTextChange(state.toHtml())
-
+        onEvent(NoteScreenEvent.OnNoteContentChange(state.toHtml()))
     }
 
     Column(modifier = modifier) {
@@ -227,7 +194,7 @@ fun RichTextField(
             cursorBrush = SolidColor(MaterialTheme.colorScheme.onBackground),
             decorationBox = { innerTextField ->
                 Box {
-                    if (text.isEmpty()) {
+                    if (state.annotatedString.isEmpty()) {
                         Text(
                             text = placeholder,
                             style = style.copy(
@@ -241,15 +208,32 @@ fun RichTextField(
                 }
             },
         )
-        RichTextStyleRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp)
-                .clip(RoundedCornerShape(16.dp))
-                .background(MaterialTheme.colorScheme.secondaryContainer)
-                .padding(4.dp),
-            state = state
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            RichTextStyleRow(
+                modifier = Modifier
+                    .weight(1f),
+                state = state
+            )
+
+            Box(
+                Modifier
+                    .height(32.dp)
+                    .clip(MaterialTheme.shapes.large).clickable {
+                        onEvent(NoteScreenEvent.OnNoteSave)
+                    }
+                    .background(MaterialTheme.colorScheme.primaryContainer)
+                    .padding(horizontal = 16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Сохранить",
+                    style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSecondaryContainer)
+                )
+            }
+        }
+
     }
 
 

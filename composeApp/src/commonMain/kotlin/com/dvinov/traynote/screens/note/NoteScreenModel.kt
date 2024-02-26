@@ -100,7 +100,7 @@ class NoteScreenModel(private val noteRepository: NoteRepository) : ScreenModel 
     }
 
     private suspend fun saveNote() {
-        if (_noteState.value.content.isNullOrBlank()) return
+        if (_noteState.value.content.isNullOrEmpty()) return
         val clock = Clock.System.now()
         if (_noteState.value.id != null) {
             noteRepository.updateNote(

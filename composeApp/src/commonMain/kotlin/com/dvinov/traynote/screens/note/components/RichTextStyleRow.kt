@@ -3,11 +3,7 @@ package com.dvinov.traynote.screens.note.components
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -49,6 +45,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
 import com.mohamedrejeb.richeditor.model.RichTextState
+import com.seiko.imageloader.util.Logger.Companion.None
+import java.awt.color.ColorSpace
 
 val fontSizes = listOf(10.sp, 12.sp, 14.sp, 16.sp, 18.sp, 20.sp, 24.sp)
 
@@ -76,7 +74,7 @@ fun RichTextStyleButton(
     )
 
     IconButton(
-        modifier = Modifier.focusProperties { canFocus = false },
+        modifier = Modifier.size(40.dp).focusProperties { canFocus = false },
         onClick = onClick,
         colors = IconButtonDefaults.iconButtonColors(
             contentColor = contentColor,
@@ -88,7 +86,7 @@ fun RichTextStyleButton(
             tint = tint ?: LocalContentColor.current,
             modifier = Modifier.background(
                 color = iconBackgroundColor, shape = CircleShape
-            ).padding(4.dp)
+            ).padding(6.dp)
         )
     }
 }
@@ -102,7 +100,7 @@ fun RichTextStyleRow(
     val colors = listOf(
         MaterialTheme.colorScheme.onBackground,
         Color.Black,
-        Color.White.copy(alpha = 0.5f),
+        Color.White.copy(alpha = 0.4f),
         Color(0xFFfc4635),
         Color(0xFFfcde35),
         Color(0xFF32a84e),
@@ -170,6 +168,7 @@ fun RichTextStyleRow(
 
         item {
             Box {
+                println("${state.currentSpanStyle.color}")
                 var expanded by remember { mutableStateOf(false) }
                 RichTextStyleButton(
                     onClick = {
@@ -177,7 +176,7 @@ fun RichTextStyleRow(
                     },
                     isSelected = false,
                     icon = Icons.Filled.ColorLens,
-                    tint = state.currentSpanStyle.color
+                    tint = if (!state.currentSpanStyle.color.colorSpace.isSrgb) Color.White else state.currentSpanStyle.color
                 )
                 DropdownMenu(
                     modifier = Modifier.clip(RoundedCornerShape(16.dp)),

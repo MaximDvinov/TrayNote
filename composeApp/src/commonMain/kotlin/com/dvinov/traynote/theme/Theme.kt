@@ -15,6 +15,7 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -89,17 +90,10 @@ private val AppShapes = Shapes(
     extraSmall = RoundedCornerShape(2.dp),
     small = RoundedCornerShape(4.dp),
     medium = RoundedCornerShape(8.dp),
-    large = RoundedCornerShape(16.dp),
-    extraLarge = RoundedCornerShape(32.dp)
+    large = RoundedCornerShape(12.dp),
+    extraLarge = RoundedCornerShape(24.dp)
 )
 
-private val AppTypography = Typography(
-    bodyMedium = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
-        fontSize = 16.sp
-    )
-)
 
 internal val LocalThemeIsDark = compositionLocalOf { mutableStateOf(true) }
 
@@ -116,10 +110,9 @@ internal fun AppTheme(
         SystemAppearance(!isDark)
         MaterialTheme(
             colorScheme = if (isDark) DarkColorScheme else LightColorScheme,
-            typography = AppTypography,
             shapes = AppShapes,
             content = {
-                Surface(content = content)
+                Surface(color = Color.Transparent,content = content)
             }
         )
     }

@@ -1,7 +1,6 @@
 package com.dvinov.traynote.screens.home
 
 import cafe.adriel.voyager.core.model.ScreenModel
-import cafe.adriel.voyager.core.model.coroutineScope
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.dvinov.traynote.db.Note
 import com.dvinov.traynote.navigation.NavigationEvent
@@ -29,10 +28,6 @@ sealed class HomeEvent {
 }
 
 class HomeScreenModel(private val noteRepository: NoteRepository) : ScreenModel {
-//    val state = noteRepository.getAllNotes().map {
-//        HomeState(list = it, searchedList = it)
-//    }.stateIn(screenModelScope, SharingStarted.WhileSubscribed(5000), HomeState())
-
     private val _state: MutableStateFlow<HomeState> = MutableStateFlow(HomeState())
     val state = _state.asStateFlow()
 

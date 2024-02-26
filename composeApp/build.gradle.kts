@@ -33,9 +33,10 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             implementation(libs.multiplatformSettings)
             implementation(libs.koin.core)
-            implementation("ca.gosyer:kotlin-multiplatform-appdirs:1.1.1")
-            implementation("com.mohamedrejeb.richeditor:richeditor-compose:1.0.0-beta04")
+            implementation(libs.kotlin.multiplatform.appdirs)
+            implementation(libs.richeditor.compose)
             implementation(libs.sqlDelight.coroutines)
+            implementation("com.konyaco:fluent:0.0.1-dev.6")
         }
 
         commonTest.dependencies {
@@ -47,7 +48,6 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.sqlDelight.driver.sqlite)
         }
-
     }
 }
 
