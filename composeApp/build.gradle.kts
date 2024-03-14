@@ -60,11 +60,11 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Exe, TargetFormat.Deb)
             includeAllModules = true
             packageName = "TrayNote"
-            version = "1.0.2"
+            version = "1.0.3"
 
             windows {
                 packageVersion = "TrayNote"
-                exePackageVersion = "1.0.2"
+                exePackageVersion = "1.0.3"
                 upgradeUuid = "1502c32b-a260-4100-9ee8-9dc2c50ef7b8"
                 iconFile.set(project.file("/resources/icon.ico"))
             }

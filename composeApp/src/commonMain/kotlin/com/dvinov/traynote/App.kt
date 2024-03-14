@@ -18,18 +18,38 @@ import com.dvinov.traynote.screens.home.TopBar
 import com.dvinov.traynote.screens.note.NoteScreen
 import com.dvinov.traynote.theme.AppTheme
 
-
+sealed class NoteAction {
+    data object Create : NoteAction()
+    data class Edit(val note: Note) : NoteAction()
+}
 
 @Composable
-fun AppContent(modifier: Modifier, isCreate: Boolean, openNote: Note?) {
+fun AppContent(modifier: Modifier, noteAction: NoteAction?) {
     var navigator: Navigator? by remember {
         mutableStateOf(null)
+    }
+
+    LaunchedEffect(noteAction) {
+        if (navigator?.lastItem is NoteScreen) {
+            navigator?.pop()
+        }
+        when (noteAction) {
+            NoteAction.Create -> {
+                navigator?.push(NoteScreen(null))
+            }
+
+            is NoteAction.Edit -> {
+                navigator?.push(NoteScreen(noteAction.note))
+            }
+
+            else -> {}
+        }
     }
 
     Scaffold(modifier = modifier, topBar = {
         Column {
             TopBar(isTopLevel = navigator?.lastItem is HomeScreen) {
-                if (navigator?.lastItem is NoteScreen){
+                if (navigator?.lastItem is NoteScreen) {
                     navigator?.pop()
                 } else {
                     navigator?.push(NoteScreen(null))
@@ -43,16 +63,9 @@ fun AppContent(modifier: Modifier, isCreate: Boolean, openNote: Note?) {
 
     }) { padding ->
         Column(modifier = Modifier.padding(padding).fillMaxSize()) {
-            if (isCreate || openNote != null) {
-                Navigator(listOf(HomeScreen(), NoteScreen(openNote))){
-                    navigator = it
-                    SlideTransition(it)
-                }
-            } else {
-                Navigator(HomeScreen()){
-                    navigator = it
-                    SlideTransition(it)
-                }
+            Navigator(HomeScreen()) {
+                navigator = it
+                SlideTransition(it)
             }
         }
     }

@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.*
 import com.dvinov.traynote.AppContent
+import com.dvinov.traynote.NoteAction
 import com.dvinov.traynote.db.Note
 import com.dvinov.traynote.di.appModule
 import com.dvinov.traynote.repositories.NoteRepository
@@ -48,8 +49,7 @@ val koin = startKoin {
 @OptIn(ExperimentalResourceApi::class)
 fun main() = application {
     var isVisible by remember { mutableStateOf(true) }
-    var isCreate by remember { mutableStateOf(false) }
-    var openNote by remember { mutableStateOf<Note?>(null) }
+    var noteAction by remember { mutableStateOf<NoteAction?>(null) }
     val noteRepository = koin.koin.get<NoteRepository>()
     val notes by noteRepository.getAllNotes().map { it.filter { it.isPinned == true } }
         .collectAsState(initial = emptyList())
@@ -58,8 +58,7 @@ fun main() = application {
     Window(
         onCloseRequest = {
             isVisible = false;
-            isCreate = false
-            openNote = null
+            noteAction = null
         },
         state = windowState,
         icon = painterResource(Res.drawable.file_plus),
@@ -94,7 +93,7 @@ fun main() = application {
                         isVisible = false
                     }
                 }
-                AppContent(modifier = Modifier.weight(1f), isCreate, openNote)
+                AppContent(modifier = Modifier.weight(1f), noteAction)
 
             }
         }
@@ -109,13 +108,13 @@ fun main() = application {
             menu = {
                 notes.forEach {
                     Item(it.title, onClick = {
-                        openNote = it
+                        noteAction = NoteAction.Edit(it)
                         isVisible = true
                     })
                 }
 
                 Item("Создать", onClick = {
-                    isCreate = true
+                    noteAction = NoteAction.Create
                     isVisible = true
                 })
 
@@ -129,7 +128,6 @@ fun main() = application {
 
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ApplicationScope.AppBar(windowState: WindowState, onClose: () -> Unit = {}) {
     var isActive by remember {
