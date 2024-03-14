@@ -34,13 +34,18 @@ import compose.icons.feathericons.Minus
 import compose.icons.feathericons.Square
 import compose.icons.feathericons.X
 import kotlinx.coroutines.flow.map
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
 import org.koin.core.context.startKoin
+import traynote.composeapp.generated.resources.Res
+import traynote.composeapp.generated.resources.file_plus
 import java.awt.Dimension
 
 val koin = startKoin {
     modules(appModule)
 }
 
+@OptIn(ExperimentalResourceApi::class)
 fun main() = application {
     var isVisible by remember { mutableStateOf(true) }
     var isCreate by remember { mutableStateOf(false) }
@@ -57,7 +62,7 @@ fun main() = application {
             openNote = null
         },
         state = windowState,
-        icon = rememberVectorPainter(FeatherIcons.FilePlus),
+        icon = painterResource(Res.drawable.file_plus),
         visible = isVisible,
         transparent = true,
         undecorated = true,
@@ -80,10 +85,14 @@ fun main() = application {
                 window.isResizable = windowState.placement != WindowPlacement.Maximized
                 if (windowState.placement != WindowPlacement.Maximized) {
                     WindowDraggableArea {
-                        AppBar(windowState)
+                        AppBar(windowState) {
+                            isVisible = false
+                        }
                     }
                 } else {
-                    AppBar(windowState)
+                    AppBar(windowState) {
+                        isVisible = false
+                    }
                 }
                 AppContent(modifier = Modifier.weight(1f), isCreate, openNote)
 
@@ -94,7 +103,7 @@ fun main() = application {
 
     if (!isVisible) {
         Tray(
-            icon = rememberVectorPainter(FeatherIcons.FilePlus),
+            icon = painterResource(Res.drawable.file_plus),
             tooltip = "TrayNote",
             onAction = { isVisible = true },
             menu = {
@@ -122,40 +131,40 @@ fun main() = application {
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun ApplicationScope.AppBar(windowState: WindowState) {
+fun ApplicationScope.AppBar(windowState: WindowState, onClose: () -> Unit = {}) {
     var isActive by remember {
         mutableStateOf(false)
     }
 
     Row(
         modifier = Modifier.fillMaxWidth().background(color = MaterialTheme.colorScheme.secondaryContainer.copy(0.5f))
-            .padding(top = 8.dp, start = 8.dp, end = 8.dp, bottom = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.End),
+            .padding(top = 0.dp, start = 8.dp, end = 0.dp, bottom = 0.dp),
+        horizontalArrangement = Arrangement.spacedBy(0.dp, Alignment.End),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             imageVector = FeatherIcons.FilePlus,
-            modifier = Modifier.size(18.dp),
+            modifier = Modifier.size(14.dp),
             contentDescription = "icon",
             tint = MaterialTheme.colorScheme.onSecondary
         )
-
-        Text(
-            "Меню",
-            modifier = Modifier
-                .clip(MaterialTheme.shapes.small)
-                .background(
-                    color = if (isActive) MaterialTheme.colorScheme.secondary.copy(0.3f) else Color.Transparent
-                )
-                .clickable{
-
-                }
-                .onPointerEvent(PointerEventType.Enter) { isActive = true }
-                .onPointerEvent(PointerEventType.Exit) { isActive = false }
-                .padding(vertical = 4.dp, horizontal = 10.dp),
-            color = MaterialTheme.colorScheme.onBackground,
-            style = MaterialTheme.typography.bodyMedium
-        )
+//
+//        Text(
+//            "Меню",
+//            modifier = Modifier
+//                .clip(MaterialTheme.shapes.small)
+//                .background(
+//                    color = if (isActive) MaterialTheme.colorScheme.secondary.copy(0.3f) else Color.Transparent
+//                )
+//                .clickable{
+//
+//                }
+//                .onPointerEvent(PointerEventType.Enter) { isActive = true }
+//                .onPointerEvent(PointerEventType.Exit) { isActive = false }
+//                .padding(vertical = 4.dp, horizontal = 10.dp),
+//            color = MaterialTheme.colorScheme.onBackground,
+//            style = MaterialTheme.typography.bodyMedium
+//        )
 
         Spacer(modifier = Modifier.weight(1f))
 
@@ -183,7 +192,7 @@ fun ApplicationScope.AppBar(windowState: WindowState) {
             icon = FeatherIcons.X,
             background = MaterialTheme.colorScheme.errorContainer,
             iconColor = MaterialTheme.colorScheme.error,
-            onClick = ::exitApplication
+            onClick = onClose
         )
     }
 }
@@ -192,7 +201,7 @@ fun ApplicationScope.AppBar(windowState: WindowState) {
 @Composable
 private fun WindowControlButton(
     background: Color = MaterialTheme.colorScheme.primary,
-    contentPadding: PaddingValues = PaddingValues(4.dp),
+    contentPadding: PaddingValues = PaddingValues(vertical = 4.dp, horizontal = 16.dp),
     shape: RoundedCornerShape = RoundedCornerShape(4.dp),
     icon: ImageVector,
     iconColor: Color = MaterialTheme.colorScheme.primary,
@@ -204,7 +213,9 @@ private fun WindowControlButton(
         if (isActive) background else Color.Transparent
     )
     Box(
-        modifier = Modifier.size(24.dp)
+        modifier = Modifier
+            .height(24.dp)
+            .width(48.dp)
             .clip(shape)
             .background(colorBackground)
             .onPointerEvent(PointerEventType.Enter) { isActive = true }

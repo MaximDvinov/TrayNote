@@ -22,6 +22,7 @@ kotlin {
             implementation(compose.runtime)
             implementation(compose.material3)
             implementation(compose.materialIconsExtended)
+            implementation(compose.components.resources)
             implementation(libs.libres)
             implementation(libs.voyager.navigator)
             implementation(libs.voyager.transitions)
@@ -59,11 +60,11 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Exe, TargetFormat.Deb)
             includeAllModules = true
             packageName = "TrayNote"
-            version = "1.0.1"
+            version = "1.0.2"
 
             windows {
                 packageVersion = "TrayNote"
-                exePackageVersion = "1.0.1"
+                exePackageVersion = "1.0.2"
                 upgradeUuid = "1502c32b-a260-4100-9ee8-9dc2c50ef7b8"
                 iconFile.set(project.file("/resources/icon.ico"))
             }

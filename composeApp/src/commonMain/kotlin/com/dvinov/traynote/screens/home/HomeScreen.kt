@@ -172,7 +172,7 @@ fun NoteItem(note: Note, onClick: () -> Unit = {}) {
             .fillMaxWidth()
             .clip(MaterialTheme.shapes.medium)
             .clickable(onClick = onClick)
-            .padding(8.dp)
+            .padding(vertical = 8.dp, horizontal = 20.dp)
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(2.dp)
